@@ -27,7 +27,7 @@ class TicketController extends ApiController
     public function store(StoreTicketRequest $request)
     {
         try {
-            $user = User::findOrFail($request->input('data.relationships.author.data.id'));
+            User::findOrFail($request->input('data.relationships.author.data.id'));
         } catch (\Exception $e) {
             return $this->ok('User not found', [
                 'error' => 'The provided user id does not exist'
