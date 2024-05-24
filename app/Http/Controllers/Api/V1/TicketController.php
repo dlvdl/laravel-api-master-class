@@ -11,7 +11,6 @@ use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Validation\UnauthorizedException;
 
 class TicketController extends ApiController
 {
@@ -34,8 +33,10 @@ class TicketController extends ApiController
             $this->isAble('store', null);
 
             return new TicketResource(Ticket::create($request->mappedAttributes()));
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $exception) {
             return $this->error('User not found', 404);
+        } catch (AuthorizationException $exception) {
+            return  $this->error('You are not authorized to store that resource', 401);
         }
     }
 
@@ -90,6 +91,8 @@ class TicketController extends ApiController
             return new TicketResource($ticket);
         } catch (ModelNotFoundException $exception) {
             return $this->error('Ticket cannot be found', 404);
+        } catch (AuthorizationException $exception) {
+            return $this->error('You are not authorized to replace that resource', 401);
         }
     }
 
@@ -108,6 +111,8 @@ class TicketController extends ApiController
             return $this->ok('Ticket successfully deleted');
         } catch (ModelNotFoundException $exception) {
             return $this->error('Ticket cannot be found', 404);
+        } catch (AuthorizationException $exception) {
+            return $this->error('You are not authorized to delete that resource', 401);
         }
     }
 }
